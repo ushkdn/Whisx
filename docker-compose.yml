@@ -1,0 +1,84 @@
+services:
+
+    whisx.auth.api:
+        image: ${DOCKER_REGISTRY-}
+        container_name: whisx.auth.api
+        build:
+            context: ./Whisx.Auth
+            dockerfile: Whisx.Auth.API/Dockerfile
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+        ports:
+            - ${WHISX_AUTH_API_HTTP_PORTS}
+            - ${WHISX_AUTH_API_HTTPS_PORTS}
+        depends_on:
+            - whisx.auth.db
+
+    whisx.user.api:
+        image: ${DOCKER_REGISTRY-}
+        container_name: whisx.user.api
+        build:
+            context: ./Whisx.User
+            dockerfile: Whisx.User.API/Dockerfile
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+        ports:
+            - ${WHISX_USER_API_HTTP_PORTS}
+            - ${WHISX_USER_API_HTTPS_PORTS}
+        depends_on:
+            - whisx.user.db
+    
+    whisx.auth.db:
+        image: postgres:17
+        container_name: whisx.auth.db
+        ports:
+            - ${WHISX_AUTH_DB_PORTS}
+        environment:
+            POSTGRES_DB: ${WHISX_AUTH_DB_DATABASE}
+            POSTGRES_USER: ${WHISX_AUTH_DB_USER}
+            POSTGRES_PASSWORD: ${WHISX_AUTH_DB_PASSWORD}
+        volumes:
+            - whisx.auth.db.data:/var/lib/postgresql/data
+
+    whisx.user.db:
+        image: postgres:17
+        container_name: whisx.user.db
+        ports:
+            - ${WHISX_USER_DB_PORTS}
+        environment:
+            POSTGRES_DB: ${WHISX_USER_DB_DATABASE}
+            POSTGRES_USER: ${WHISX_USER_DB_USER}
+            POSTGRES_PASSWORD: ${WHISX_USER_DB_PASSWORD}
+        volumes:
+            - whisx.user.db.data:/var/lib/postgresql/data
+
+    whisx.pgadmin:
+        image: dpage/pgadmin4:9.0.0
+        container_name: whisx.pgadmin
+        environment:
+            PGADMIN_DEFAULT_EMAIL: ${WHISX_PGADMIN_EMAIL}
+            PGADMIN_DEFAULT_PASSWORD: ${WHISX_PGADMIN_PASSWORD}
+        ports:
+            - ${WHISX_PGADMIN_PORTS}
+        volumes:
+            - whisx.pgadmin.data:/var/lib/pgadmin/data
+        depends_on:
+            - whisx.user.db
+            - whisx.auth.db
+    
+    whisx.redis:
+        image: redis:8-alpine
+        container_name: whisx.redis
+        ports:
+            - ${WHISX_REDIS_PORTS}
+        volumes:
+            - whisx.redis.data:/var/lib/redis/data
+        depends_on:
+            - whisx.auth.db
+            - whisx.user.db
+        
+volumes:
+    whisx.user.db.data:
+    whisx.auth.db.data:
+    whisx.pgadmin.data:
+    whisx.redis.data:
