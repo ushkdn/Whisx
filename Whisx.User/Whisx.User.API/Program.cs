@@ -1,3 +1,6 @@
+using Whisx.User.API.Extensions;
+using Whisx.User.Application.Extensions;
+
 namespace Whisx.User.API;
 
 public class Program
@@ -9,11 +12,20 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddOpenApi();
 
+        builder.Services.AddPresentationLayer();
+        builder.Services.AddApplicationLayer();
+
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
+            app.UseSwagger();
+            app.UseSwaggerUI(x =>
+            {
+                x.RoutePrefix = string.Empty;
+                x.SwaggerEndpoint("/swagger/v1/swagger.json", string.Empty);
+            });
         }
 
         app.UseHttpsRedirection();
