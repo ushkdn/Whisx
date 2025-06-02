@@ -1,32 +1,32 @@
 services:
 
-    whisx.auth.api:
-        image: ${DOCKER_REGISTRY-}
-        container_name: whisx.auth.api
-        build:
-            context: ./Whisx.Auth
-            dockerfile: Whisx.Auth.API/Dockerfile
-        environment:
-            - ASPNETCORE_ENVIRONMENT=Development
-        ports:
-            - ${WHISX_AUTH_API_HTTP_PORTS}
-            - ${WHISX_AUTH_API_HTTPS_PORTS}
-        depends_on:
-            - whisx.auth.db
+    # whisx.auth.api:
+    #     image: ${DOCKER_REGISTRY-}
+    #     container_name: whisx.auth.api
+    #     build:
+    #         context: .
+    #         dockerfile: Whisx.Auth/Whisx.Auth.API/Dockerfile
+    #     environment:
+    #         - ASPNETCORE_ENVIRONMENT=Development
+    #     ports:
+    #         - ${WHISX_AUTH_API_HTTP_PORTS}
+    #         - ${WHISX_AUTH_API_HTTPS_PORTS}
+    #     depends_on:
+    #         - whisx.auth.db
 
-    whisx.user.api:
-        image: ${DOCKER_REGISTRY-}
-        container_name: whisx.user.api
-        build:
-            context: ./Whisx.User
-            dockerfile: Whisx.User.API/Dockerfile
-        environment:
-            - ASPNETCORE_ENVIRONMENT=Development
-        ports:
-            - ${WHISX_USER_API_HTTP_PORTS}
-            - ${WHISX_USER_API_HTTPS_PORTS}
-        depends_on:
-            - whisx.user.db
+    # whisx.user.api:
+    #     image: ${DOCKER_REGISTRY-}
+    #     container_name: whisx.user.api
+    #     build:
+    #         context: .
+    #         dockerfile: Whisx.User/Whisx.User.API/Dockerfile
+    #     environment:
+    #         - ASPNETCORE_ENVIRONMENT=Development
+    #     ports:
+    #         - ${WHISX_USER_API_HTTP_PORTS}
+    #         - ${WHISX_USER_API_HTTPS_PORTS}
+    #     depends_on:
+    #         - whisx.user.db
     
     whisx.auth.db:
         image: postgres:17
@@ -50,7 +50,19 @@ services:
             POSTGRES_USER: ${WHISX_USER_DB_USER}
             POSTGRES_PASSWORD: ${WHISX_USER_DB_PASSWORD}
         volumes:
-            - whisx.user.db.data:/var/lib/postgresql/data
+            - whisx.user.db.data:/var/lib/postgresql/data\
+
+    whisx.logs.db:
+        image: postgres:17
+        container_name: whisx.logs.db
+        ports:
+            - ${WHISX_LOGS_DB_PORTS}
+        environment:
+            POSTGRES_DB: ${WHISX_LOGS_DB_DATABASE}
+            POSTGRES_USER: ${WHISX_LOGS_DB_USER}
+            POSTGRES_PASSWORD: ${WHISX_LOGS_DB_PASSWORD}
+        volumes:
+            - whisx.logs.db.data:/var/lib/postgresql/data
 
     whisx.pgadmin:
         image: dpage/pgadmin4:9.0.0
@@ -80,5 +92,6 @@ services:
 volumes:
     whisx.user.db.data:
     whisx.auth.db.data:
+    whisx.logs.db.data:
     whisx.pgadmin.data:
     whisx.redis.data:
