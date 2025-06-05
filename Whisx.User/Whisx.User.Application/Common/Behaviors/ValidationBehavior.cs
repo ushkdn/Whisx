@@ -12,7 +12,7 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
         logger.LogInformation("Validating request: {@request}", request);
         if (!validators.Any())
         {
-            return await next();
+            return await next(cancellationToken);
         }
 
         var context = new ValidationContext<TRequest>(request);
@@ -23,12 +23,12 @@ public sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidat
             .Where(x => x != null)
             .ToList();
 
-        if (failures.Any())
+        if (failures.Count != 0)
         {
             logger.LogError("Validation failed for request: {@request}, failures: {@failures}", request, failures);
-            throw new ValidationException("Validation faied, failures: {@failures}", failures);
+            throw new ValidationException("Validation failed", failures);
         }
 
-        return await next();
+        return await next(cancellationToken);
     }
 }

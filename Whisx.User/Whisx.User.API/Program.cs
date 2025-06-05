@@ -12,7 +12,6 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Configuration.AddAppsettingsFiles(builder.Environment);
         builder.Host.AddEnvFiles("whisx.user.api.env");
 
         var logger = SerilogFactory.CreateLogger(builder.Services, builder.Configuration);
@@ -43,6 +42,8 @@ public class Program
         app.UseAuthorization();
 
         app.UseSerilogRequestLogging();
+
+        app.UseExceptionHandler();
 
         app.MapControllers();
 

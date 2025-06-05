@@ -1,5 +1,7 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.OpenApi.Models;
 using System.Reflection;
+using Whisx.User.API.Middlewares;
 
 namespace Whisx.User.API.Extensions;
 
@@ -7,7 +9,10 @@ public static class IServiceCollectionExtensions
 {
     public static IServiceCollection AddPresentationLayer(this IServiceCollection services)
     {
-        return services.RegisterSwagger();
+        return services
+            .RegisterSwagger()
+            .AddExceptionHandler<ExceptionHandlingMiddleware>()
+            .AddProblemDetails();
     }
 
     private static IServiceCollection RegisterSwagger(this IServiceCollection services)
