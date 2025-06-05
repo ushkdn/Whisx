@@ -88,6 +88,15 @@ services:
         depends_on:
             - whisx.auth.db
             - whisx.user.db
+    
+    whisx.seq:
+        image: datalust/seq:2025
+        container_name: whisx.seq
+        environment:
+            - ACCEPT_EULA=Y
+        ports:
+            - ${WHISX_SEQ_SERVER_PORTS}
+            - ${WHISX_SEQ_DASHBOARD_PORTS}
         
 volumes:
     whisx.user.db.data:
